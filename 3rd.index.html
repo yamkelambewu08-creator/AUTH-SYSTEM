@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Auth System</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(to right, #667eea);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 320px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 95%;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- REGISTER-->
+         <div id="registerBox">
+            <h2>Register</h2>
+            <input type="text" id="regUsername" placeholder="Username">
+            <input type="email" id="regEmail" placeholder="Email">
+            <input type="password" id="regPassword" placeholder="Password">
+            <button onclick="register()">Register</button>
+            <p>Already have an account? <a onclick="showLogin()"></a></p>
+         </div>
+
+         <!--LOGIN-->
+         <div id="loginBox" class="hidden">
+            <h2>Login</h2>
+            <input type="email" id="loginEmail" placeholder="Email">
+            <input type="password" id="loginPassword" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <p>No account? <a onclick="showRegister()">Register</a></p>
+         </div>
+
+         <!-- DASHBOARD -->
+          <div id="DashboardBox" class="hidden">
+            <h2>Dashboard</h2>
+            <p id="welcomeText"></p>
+            <button onclick="logout()">Logout</button>
+          </div>
+
+    </div>
+
+    <script>
+        const registerBox = document.getElementById("registerBox");
+        const loginBox = document.getElementById("loginBox");
+        const dashboardBox = document.getElementById("dashboardBox");
+        const welcomeText = document.getElementById("welcomeText");
+
+        function showLogin() {
+            registerBox.classList.add("hidden");
+            loginBox.classList.remove("hidden");
+        }
+
+        function showRegister() {
+            loginBox.classList.add("hidden");
+            registerBox.classList.remove("hidden");
+        }
+
+        function showDashboard(Username) {
+            loginBox.classList.add("hidden");
+            registerBox.classList.add("hidden");
+            dashboardBox.classList.remove("hidden");
+            welcomeText.textContent = "Welcome," + Username ;
+        }
+
+        function register() {
+            const Username = document.getElementById("regUsername").value;
+            const email = document.getElementById("regEmail").value;
+            const password = document.getElementById("regPassword").value;
+
+            if (!Username || !email || !password) {
+                alert("Please fill all the fields!");
+                return;
+            }
+
+            const user = {Username, email, password};
+            localStorage.setItem("user", JSON.stringify(user));
+            alert("Registration successful!");
+            showLogin();
+        }
+
+        function login() {
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
+
+            const user =JSON.parse(localStorage.getItem("user"));
+
+            if (user && user.email === email && user.password) {
+                localStorage.setItem("loggedIn", "true");
+                showDashboard(user.Username);
+            } else {
+                alert("Invalid email or password!");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("loggedIn");
+            showLogin();
+        }
+
+        // Auto login if already logged in
+        window.onload = function() {
+            const loggedIn = localStorage.getItem("loggedIn");
+            const user = JSON.parse(localStorage.getItem("user"));
+
+            if (loggedIn && user) {
+                showDashboard(user.Username)
+            }
+        }
+    </script>
+
+</body>
+</html>
